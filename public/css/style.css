@@ -512,7 +512,7 @@ header .song_side .popular_song .pop_song::-webkit-scrollbar {
 }
 header .song_side .popular_song .pop_song li {
     min-width: 100px;
-    height: 160px;
+    height: 10px;
     list-style-type: none;
     margin-right: 10px;
     transition: .3s linear;

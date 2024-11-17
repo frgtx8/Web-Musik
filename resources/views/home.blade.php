@@ -152,20 +152,20 @@
                     <div class="wave1"></div>
                     <div class="wave1"></div>
                 </div>
-                <img src="img/1.jpg" alt="Alan">
+                <img src="img/1.jpg" alt="Alan" id="album-art">
                 <h5>On My Way <br>
                     <div class="subtitle">Alan Walker</div>
                 </h5>
                 <div class="icon">
-                    <i class="bi bi-skip-start-fill"></i>
-                    <i class="bi bi-play-fill"></i>
-                    <i class="bi bi-skip-end-fill"></i>
+                    <i class="bi bi-skip-start-fill" id="skip-start"></i>
+                    <i class="bi bi-play-fill" id="play-pause"></i>
+                    <i class="bi bi-skip-end-fill" id="skip-end"></i>
                 </div>
                 <span id="currentStart">0:00</span>
                 <div class="bar">
                     <input type="range" id="seek" min="0" value="0" max="100">
                     <div class="bar2" id="bar2"></div>
-                    <div class="dot"></div>
+                    <div class="dot" id="dot"></div>
                 </div>
                 <span id="currentEnd">0:00</span>
 
@@ -175,9 +175,81 @@
                     <div class="vol_bar"></div>
                     <div class="dot" id="vol_dot"></div>
                 </div>
+
+                <!-- Elemen audio -->
+                <audio id="audio" src="{{ asset('music/Rayola - Sumpah Mainan Bibia (Official Music Video).mp3') }}" preload="auto"></audio>
             </div>
+
         </header>
             <script src="app.js"></script>
     </body>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const audio = document.getElementById('audio');
+            const playPauseBtn = document.getElementById('play-pause');
+            const skipStartBtn = document.getElementById('skip-start');
+            const skipEndBtn = document.getElementById('skip-end');
+            const seekBar = document.getElementById('seek');
+            const currentStart = document.getElementById('currentStart');
+            const currentEnd = document.getElementById('currentEnd');
+            const volControl = document.getElementById('vol');
+            const volDot = document.getElementById('vol_dot');
+            const seekBar2 = document.getElementById('bar2');
+            const dot = document.getElementById('dot');
+
+            // Memutar atau menjeda lagu
+            playPauseBtn.addEventListener('click', function() {
+                if (audio.paused) {
+                    audio.play();
+                    playPauseBtn.classList.remove('bi-play-fill');
+                    playPauseBtn.classList.add('bi-pause-fill');
+                } else {
+                    audio.pause();
+                    playPauseBtn.classList.remove('bi-pause-fill');
+                    playPauseBtn.classList.add('bi-play-fill');
+                }
+            });
+
+            // Skip ke awal lagu
+            skipStartBtn.addEventListener('click', function() {
+                audio.currentTime = 0;
+            });
+
+            // Skip ke akhir lagu
+            skipEndBtn.addEventListener('click', function() {
+                audio.currentTime = audio.duration - 5;  // Skip 5 detik dari akhir
+            });
+
+            // Mengupdate progress bar saat musik diputar
+            audio.addEventListener('timeupdate', function() {
+                let progress = (audio.currentTime / audio.duration) * 100;
+                seekBar.value = progress;
+                seekBar2.style.width = progress + '%';
+                dot.style.left = progress + '%';
+
+                let minutesStart = Math.floor(audio.currentTime / 60);
+                let secondsStart = Math.floor(audio.currentTime % 60);
+                currentStart.textContent = `${minutesStart}:${secondsStart < 10 ? '0' : ''}${secondsStart}`;
+
+                let minutesEnd = Math.floor(audio.duration / 60);
+                let secondsEnd = Math.floor(audio.duration % 60);
+                currentEnd.textContent = `${minutesEnd}:${secondsEnd < 10 ? '0' : ''}${secondsEnd}`;
+            });
+
+            // Menangani perubahan posisi seekbar
+            seekBar.addEventListener('input', function() {
+                let value = seekBar.value;
+                audio.currentTime = (audio.duration / 100) * value;
+            });
+
+            // Mengatur volume
+            volControl.addEventListener('input', function() {
+                audio.volume = volControl.value / 100;
+                volDot.style.left = volControl.value + '%';
+            });
+        });
+    </script>
+
 
 </html>
