@@ -46,11 +46,6 @@
 
             <div class="song_side">
                 <nav>
-                    <ul>
-                        <li>Discover <span></span></li>
-                        <li>MY LIBRARY</li>
-                        <li>RADIO</li>
-                    </ul>
                     <div class="search">
                         <i class="bi bi-search"></i>
                         <input type="text" placeholder="Search Music">
@@ -59,18 +54,6 @@
                         <img src="img/User.jpg" alt="User" title="Fadhil Rahman">
                     </div>
                 </nav>
-                <div class="content">
-                    <h1>Alan Walker-Fade</h1>
-                    <p>
-                        You were the shadow to my light old you feel us Another start You fade
-                        <br>
-                        Away Afraid our aim is out of sight Wanna see us Alive
-                    </p>
-                    <div class="buttons">
-                        <button>PLAY</button>
-                        <button>FOLLOW</button>
-                    </div>
-                </div>
                 <div class="popular_song">
                     <div class="h4">
                         <h4>Popular Song</h4>
@@ -108,39 +91,12 @@
                         </div>
                     </div>
                     <div class="item">
+                        @foreach ($penyanyi as $item)
                         <li>
-                            <img src="img/arijit.jpg" alt="Arijit Singh" title="Arijit Singh">
+                            <img src="{{ $item->gambar }}" alt="Arijit Singh" title="{{ $item->nama_penyanyi }}">
                         </li>
-                        <li>
-                            <img src="img/rayola.jpg" alt="Rayola" title="Rayola">
-                        </li>
-                        <li>
-                            <img src="img/afgan.jpg" alt="Afgan" title="Afgan">
-                        </li>
-                        <li>
-                            <img src="img/david.jpg" alt="David Iztambul" title="David Iztambul">
-                        </li>
-                        <li>
-                            <img src="img/ghoshal.jpg" alt="Shreya Ghoshal" title="Shreya Ghoshal">
-                        </li>
-                        <li>
-                            <img src="img/isyana.jpg" alt="Isyana Sarasvati" title="Isyana Sarasvati">
-                        </li>
-                        <li>
-                            <img src="img/jung kook.jpg" alt="Jeon Jung Kook" title="Jeon Jung Kook">
-                        </li>
-                        <li>
-                            <img src="img/rossa.jpg" alt="Rossa" title="Rossa">
-                        </li>
-                        <li>
-                            <img src="img/taylor.jpg" alt="Taylor Swift" title="Taylor Swift">
-                        </li>
-                        <li>
-                            <img src="img/tulus.jpg" alt="Tulus" title="Tulus">
-                        </li>
-                        <li>
-                            <img src="img/vidi.jpg" alt="Vidi Aldiano" title="Vidi Aldiano">
-                        </li>
+                        @endforeach
+
                     </div>
                 </div>
             </div>
