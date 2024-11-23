@@ -11,4 +11,10 @@ use Illuminate\Support\Facades\Route;
 //     return view('home');
 // });
 
-Route::get('/', [ControllerMusic::class, 'index']);
+Route::get('/', [ControllerMusic::class, 'index'])->name('home');
+Route::get('/login', [ControllerMusic::class, 'login']);
+Route::get('/pencarian', [ControllerMusic::class, 'pencarian']);
+Route::get('/register', [ControllerMusic::class, 'register']);
+Route::post('/register', [ControllerMusic::class, 'storeRegister']);
+Route::post('/login',[ControllerMusic::class, 'storeLogin'] );
+Route::post('/logout',[ControllerMusic::class, 'logout'])->name('logout');

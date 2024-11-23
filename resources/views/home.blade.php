@@ -6,8 +6,59 @@
         <meta name="viewport" content="width=sevice-width, initial-scale=1.0">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="{{ asset('css/style.css')}}">
         <title>MelodiFY</title>
+        <style>
+
+.user-dropdown {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.user-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 45px;
+    right: 0;
+    background-color: #383d49;
+    border: 1px solid #ddd;
+    padding: 10px;
+    min-width: 150px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
+
+.dropdown-content p {
+    margin: 0;
+    font-size: 14px;
+    color: #;
+}
+
+.logout-btn {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+}
+
+.logout-btn:hover {
+    background-color: #d32f2f;
+}
+
+        </style>
     </head>
 
     <body>
@@ -30,15 +81,19 @@
                         <h5>
                             @foreach ($musik->relasi as $penyanyirelasi)
                             {{ $penyanyirelasi->judul_lagu }}
-                            @endforeach
 
 
                             <div class="subtitle">
                                 {{ $musik->nama_penyanyi }}
                             </div>
                         </h5>
-                            <i class="bi playListPlay bi-play-circle-fill" id="1"></i>
+                            <i class="bi playListPlay bi-play-circle-fill" id="play-{{ $loop->parent->iteration }}-{{ $loop->iteration }}"
+                                data-song="{{ asset($penyanyirelasi->file_path) }}"
+                                data-title="{{ $penyanyirelasi->judul_lagu }}"
+                                data-artist="{{ $musik->nama_penyanyi }}"
+                                data-image="{{ $musik->gambar }}"></i>
                     </li>
+                    @endforeach
                     @endforeach
                 </div>
             </div>
@@ -46,31 +101,23 @@
 
             <div class="song_side">
                 <nav>
-                    <ul>
-                        <li>Discover <span></span></li>
-                        <li>MY LIBRARY</li>
-                        <li>RADIO</li>
-                    </ul>
                     <div class="search">
                         <i class="bi bi-search"></i>
                         <input type="text" placeholder="Search Music">
                     </div>
                     <div class="user">
-                        <img src="img/User.jpg" alt="User" title="Fadhil Rahman">
+                        <img src="{{ Auth::user()->foto ? asset('storage/img/' . Auth::user()->foto) : 'img/User.jpg' }}" alt="User" title="{{ Auth::user()->name }}" class="user-img" id="userImg" >
+                        <div class="dropdown-content">
+                            <p>{{ Auth::user()->name }}</p>
+                            <form id="logoutForm" action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="logout-btn">Logout</button>
+                            </form>
+                        </div>
                     </div>
+
+
                 </nav>
-                <div class="content">
-                    <h1>Alan Walker-Fade</h1>
-                    <p>
-                        You were the shadow to my light old you feel us Another start You fade
-                        <br>
-                        Away Afraid our aim is out of sight Wanna see us Alive
-                    </p>
-                    <div class="buttons">
-                        <button>PLAY</button>
-                        <button>FOLLOW</button>
-                    </div>
-                </div>
                 <div class="popular_song">
                     <div class="h4">
                         <h4>Popular Song</h4>
@@ -81,14 +128,18 @@
                     </div>
                     <div class="pop_song">
                         @foreach ($penyanyi as $musik)
+                        @foreach ($musik->relasi as $lagu)
                         <li class="songItem">
                             <div class="img_play">
-                                <img src="{{ $musik->gambar }}" alt="">
-                                <i class="bi playListPlay bi-play-circle-fill" id="7"></i>
+                                <img src="{{ $musik->gambar }}" alt="Album Art">
+                                <i class="bi playListPlay bi-play-circle-fill" id="play-{{ $loop->parent->iteration }}-{{ $loop->iteration }}"
+                                   data-song="{{ asset($lagu->file_path) }}"
+                                   data-title="{{ $lagu->judul_lagu }}"
+                                   data-artist="{{ $musik->nama_penyanyi }}"
+                                   data-image="{{ $musik->gambar }}"></i>
                             </div>
-                            <h5> @foreach ($musik->relasi as $penyanyirelasi)
-                            {{ $penyanyirelasi->judul_lagu }}
-                            @endforeach
+                            <h5>
+                                {{ $lagu->judul_lagu }}
                                 <br>
                                 <div class="subtitle">
                                     {{ $musik->nama_penyanyi }}
@@ -96,8 +147,11 @@
                             </h5>
                         </li>
                         @endforeach
-
+                        @endforeach
                     </div>
+
+
+
                 </div>
                 <div class="popular_artists">
                     <div class="h4">
@@ -108,39 +162,12 @@
                         </div>
                     </div>
                     <div class="item">
+                        @foreach ($penyanyi as $item)
                         <li>
-                            <img src="img/arijit.jpg" alt="Arijit Singh" title="Arijit Singh">
+                            <img src="{{ $item->gambar }}" alt="Arijit Singh" title="{{ $item->nama_penyanyi }}">
                         </li>
-                        <li>
-                            <img src="img/rayola.jpg" alt="Rayola" title="Rayola">
-                        </li>
-                        <li>
-                            <img src="img/afgan.jpg" alt="Afgan" title="Afgan">
-                        </li>
-                        <li>
-                            <img src="img/david.jpg" alt="David Iztambul" title="David Iztambul">
-                        </li>
-                        <li>
-                            <img src="img/ghoshal.jpg" alt="Shreya Ghoshal" title="Shreya Ghoshal">
-                        </li>
-                        <li>
-                            <img src="img/isyana.jpg" alt="Isyana Sarasvati" title="Isyana Sarasvati">
-                        </li>
-                        <li>
-                            <img src="img/jung kook.jpg" alt="Jeon Jung Kook" title="Jeon Jung Kook">
-                        </li>
-                        <li>
-                            <img src="img/rossa.jpg" alt="Rossa" title="Rossa">
-                        </li>
-                        <li>
-                            <img src="img/taylor.jpg" alt="Taylor Swift" title="Taylor Swift">
-                        </li>
-                        <li>
-                            <img src="img/tulus.jpg" alt="Tulus" title="Tulus">
-                        </li>
-                        <li>
-                            <img src="img/vidi.jpg" alt="Vidi Aldiano" title="Vidi Aldiano">
-                        </li>
+                        @endforeach
+
                     </div>
                 </div>
             </div>
@@ -152,7 +179,7 @@
                     <div class="wave1"></div>
                     <div class="wave1"></div>
                 </div>
-                <img src="img/1.jpg" alt="Alan" id="album-art">
+                <img src="/img/1.jpg" alt="Alan" id="album-art">
                 <h5>On My Way <br>
                     <div class="subtitle">Alan Walker</div>
                 </h5>
@@ -172,84 +199,276 @@
                 <div class="vol">
                     <i class="bi bi-volume-down-fill"></i>
                     <input type="range" id="vol" min="0" value="30" max="100">
-                    <div class="vol_bar"></div>
+                    <div class="vol_bar" id="vol_bar"></div>
                     <div class="dot" id="vol_dot"></div>
                 </div>
 
                 <!-- Elemen audio -->
-                <audio id="audio" src="{{ asset('music/Rayola - Sumpah Mainan Bibia (Official Music Video).mp3') }}" preload="auto"></audio>
+                <audio id="audio" src="{{ asset('music/Alan Walker Sabrina Carpenter & Farruko - On My Way.mp3') }}" preload="auto"></audio>
             </div>
 
         </header>
-            <script src="app.js"></script>
+            {{--  <script src="app.js"></script>  --}}
     </body>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        // Toggle dropdown visibility
+        document.getElementById('userImg').addEventListener('click', function () {
+            const dropdown = document.querySelector('.dropdown-content');
+            dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+        });
+
+        // Optional: Hide dropdown when clicked outside
+        window.addEventListener('click', function (e) {
+            const dropdown = document.querySelector('.dropdown-content');
+            const userImg = document.getElementById('userImg');
+            if (!userImg.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const audio = document.getElementById('audio');
+            const albumArt = document.getElementById('album-art');
+            const titleDisplay = document.querySelector('.master_play h5');
+            const playButtons = document.querySelectorAll('.playListPlay');
+            const seekBar = document.getElementById('seek'); // Progress bar
+            const currentStart = document.getElementById('currentStart'); // Current time display
+            const currentEnd = document.getElementById('currentEnd'); // Total time display
+            const bar2 = document.getElementById('bar2'); // Bar element
+            const dot = document.getElementById('dot'); // Dot element
+            const volControl = document.getElementById('vol'); // Volume control slider
+            const volBar = document.querySelector('.vol_bar'); // Volume bar element
+            const volDot = document.getElementById('vol_dot'); // Volume dot element
+
+            // Play button logic
+            playButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const songPath = this.dataset.song;
+                    const songTitle = this.dataset.title;
+                    const songArtist = this.dataset.artist;
+                    const songImage = this.dataset.image;
+
+                    // Stop current audio and load new song
+                    audio.pause();
+                    audio.src = songPath;
+                    audio.load();
+                    audio.play();
+
+                    // Update UI
+                    titleDisplay.innerHTML = `${songTitle} <br><div class="subtitle">${songArtist}</div>`;
+                    albumArt.src = songImage;
+
+                    // Change play button icon
+                    playPauseBtn.classList.remove('bi-play-fill');
+                    playPauseBtn.classList.add('bi-pause-fill');
+                });
+            });
+
+            // Play/Pause button functionality
+
+
+            // Update progress bar and current time display
+            audio.addEventListener('timeupdate', function () {
+                const currentTime = audio.currentTime;
+                const duration = audio.duration;
+
+                // Update the seek bar value
+                const progress = (currentTime / duration) * 100;
+                seekBar.value = progress;
+
+                // Update the bar2 width and dot position without transition
+                bar2.style.width = `${progress}%`; // Update the bar2 width
+                dot.style.left = `${progress}%`; // Move the dot immediately
+
+                // Update current time display (00:00 format)
+                const currentMinutes = Math.floor(currentTime / 60);
+                const currentSeconds = Math.floor(currentTime % 60);
+                currentStart.textContent = `${currentMinutes}:${currentSeconds < 10 ? '0' + currentSeconds : currentSeconds}`;
+
+                // Update total time display (00:00 format)
+                const durationMinutes = Math.floor(duration / 60);
+                const durationSeconds = Math.floor(duration % 60);
+                currentEnd.textContent = `${durationMinutes}:${durationSeconds < 10 ? '0' + durationSeconds : durationSeconds}`;
+            });
+
+            // Allow user to manually change progress via seek bar
+            seekBar.addEventListener('input', function () {
+                const seekTime = (seekBar.value / 100) * audio.duration;
+                audio.currentTime = seekTime;
+
+                // Directly update the dot position without any transition
+                dot.style.left = `${seekBar.value}%`; // Directly update the dot position
+            });
+
+            // Volume control: Update volume and the volume bar
+            volControl.addEventListener('input', function () {
+                const volumeValue = volControl.value;
+
+                // Update the audio volume
+                audio.volume = volumeValue / 100;
+
+                // Update the volume bar width and position of the dot
+                volBar.style.width = `${volumeValue}%`; // Update volume bar width
+                volDot.style.left = `${volumeValue}%`; // Move the volume dot
+            });
+
+            // Volume control: Set initial values for the volume bar and dot
+            const initialVolume = volControl.value;
+            volBar.style.width = `${initialVolume}%`;
+            volDot.style.left = `${initialVolume}%`;
+        });
+
+    </script>
+
+    <script>
+
+
+
+    </script>
+
+    <script>
+        const playlist = {!! json_encode($penyanyi->map(function ($penyanyi) {
+            // Pastikan relasi relasi tidak null
+            return $penyanyi->relasi ? $penyanyi->relasi->map(function ($musicItem) use ($penyanyi) {
+                return [
+                    'songPath' => $musicItem->file_path,  // Mengambil file_path dari relasi Music
+                    'title' => $musicItem->judul_lagu,    // Mengambil judul_lagu dari Music
+                    'artist' => $penyanyi->nama_penyanyi, // Mengambil nama_penyanyi dari Penyanyi
+                    'albumArt' => $penyanyi->gambar       // Mengambil gambar dari Penyanyi
+                ];
+            }) : [];
+        })) !!};
+        console.log("playlist",playlist)
+
+        document.addEventListener('DOMContentLoaded', function () {
             const audio = document.getElementById('audio');
             const playPauseBtn = document.getElementById('play-pause');
+            const albumArt = document.getElementById('album-art');
+            const titleDisplay = document.querySelector('.master_play h5');
             const skipStartBtn = document.getElementById('skip-start');
             const skipEndBtn = document.getElementById('skip-end');
-            const seekBar = document.getElementById('seek');
-            const currentStart = document.getElementById('currentStart');
-            const currentEnd = document.getElementById('currentEnd');
-            const volControl = document.getElementById('vol');
-            const volDot = document.getElementById('vol_dot');
-            const seekBar2 = document.getElementById('bar2');
-            const dot = document.getElementById('dot');
 
-            // Memutar atau menjeda lagu
-            playPauseBtn.addEventListener('click', function() {
-                if (audio.paused) {
+            let currentSongIndex = 0;
+
+            if (!playlist || playlist.length === 0) {
+                console.error('Playlist kosong atau undefined');
+                return;
+            }
+
+            function playSong(songIndex) {
+                const song = playlist[songIndex][0];
+
+                if (song && song.songPath && song.title && song.artist && song.albumArt) {
+                    audio.src = song.songPath;
+                    titleDisplay.innerHTML = `${song.title} <br><div class="subtitle">${song.artist}</div>`;
+                    albumArt.src = song.albumArt;
                     audio.play();
                     playPauseBtn.classList.remove('bi-play-fill');
                     playPauseBtn.classList.add('bi-pause-fill');
                 } else {
+                    console.error("Data lagu tidak lengkap untuk indeks:", songIndex);
+                }
+            }
+
+
+            // Tombol Play/Pause
+            playPauseBtn.addEventListener('click', function () {
+                if (audio.paused) {
+                    audio.play();
+                    this.classList.remove('bi-play-fill');
+                    this.classList.add('bi-pause-fill');
+                } else {
                     audio.pause();
-                    playPauseBtn.classList.remove('bi-pause-fill');
-                    playPauseBtn.classList.add('bi-play-fill');
+                    this.classList.remove('bi-pause-fill');
+                    this.classList.add('bi-play-fill');
                 }
             });
 
-            // Skip ke awal lagu
-            skipStartBtn.addEventListener('click', function() {
-                audio.currentTime = 0;
+            // Tombol Skip Start (Lagu Sebelumnya)
+            skipStartBtn.addEventListener('click', function () {
+                currentSongIndex = (currentSongIndex - 1 + playlist.length) % playlist.length; // Looping ke lagu terakhir jika berada di awal
+                console.log("Prev Song Index:", currentSongIndex); // Debugging: Periksa indeks
+                playSong(currentSongIndex);
             });
 
-            // Skip ke akhir lagu
-            skipEndBtn.addEventListener('click', function() {
-                audio.currentTime = audio.duration - 5;  // Skip 5 detik dari akhir
+            // Tombol Skip End (Lagu Berikutnya)
+            skipEndBtn.addEventListener('click', function () {
+                currentSongIndex = (currentSongIndex + 1) % playlist.length; // Looping ke lagu pertama jika berada di akhir
+                console.log("Next Song Index:", currentSongIndex); // Debugging: Periksa indeks
+                playSong(currentSongIndex);
             });
 
-            // Mengupdate progress bar saat musik diputar
-            audio.addEventListener('timeupdate', function() {
-                let progress = (audio.currentTime / audio.duration) * 100;
-                seekBar.value = progress;
-                seekBar2.style.width = progress + '%';
-                dot.style.left = progress + '%';
-
-                let minutesStart = Math.floor(audio.currentTime / 60);
-                let secondsStart = Math.floor(audio.currentTime % 60);
-                currentStart.textContent = `${minutesStart}:${secondsStart < 10 ? '0' : ''}${secondsStart}`;
-
-                let minutesEnd = Math.floor(audio.duration / 60);
-                let secondsEnd = Math.floor(audio.duration % 60);
-                currentEnd.textContent = `${minutesEnd}:${secondsEnd < 10 ? '0' : ''}${secondsEnd}`;
-            });
-
-            // Menangani perubahan posisi seekbar
-            seekBar.addEventListener('input', function() {
-                let value = seekBar.value;
-                audio.currentTime = (audio.duration / 100) * value;
-            });
-
-            // Mengatur volume
-            volControl.addEventListener('input', function() {
-                audio.volume = volControl.value / 100;
-                volDot.style.left = volControl.value + '%';
-            });
+            // Mulai memutar lagu pertama saat halaman dimuat
+            playSong(currentSongIndex);
         });
+
+
     </script>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const audio = document.getElementById('audio');
+            const volControl = document.getElementById('vol'); // Volume control slider
+            const volBar = document.querySelector('.vol_bar'); // Volume bar element
+            const volDot = document.getElementById('vol_dot'); // Volume dot element
+            const volIcon = document.querySelector('.bi-volume-down-fill'); // Volume icon
+
+            // Volume control: Update volume and the volume bar
+            volControl.addEventListener('input', function () {
+                const volumeValue = volControl.value;
+
+                // Update the audio volume
+                audio.volume = volumeValue / 100;
+
+                // Update the volume bar width and position of the dot
+                volBar.style.width = `${volumeValue}%`; // Update volume bar width
+                volDot.style.left = `${volumeValue}%`; // Move the volume dot
+
+                // Update the volume icon based on volume level
+                updateVolumeIcon(volumeValue);
+            });
+
+            // Volume control: Set initial values for the volume bar and dot
+            const initialVolume = volControl.value;
+            volBar.style.width = `${initialVolume}%`;
+            volDot.style.left = `${initialVolume}%`;
+            updateVolumeIcon(initialVolume);
+
+            function updateVolumeIcon(volumeValue) {
+                const icon = volIcon;
+
+                // Set the appropriate icon based on the volume level
+                if (volumeValue === "0") {
+                    icon.classList.remove('bi-volume-down-fill', 'bi-volume-up-fill', 'bi-volume-mute-fill');
+                    icon.classList.add('bi-volume-mute-fill');
+                } else if (volumeValue <= 50) {
+                    icon.classList.remove('bi-volume-up-fill', 'bi-volume-mute-fill');
+                    icon.classList.add('bi-volume-down-fill'); // One arc (low volume)
+                } else {
+                    icon.classList.remove('bi-volume-down-fill', 'bi-volume-mute-fill');
+                    icon.classList.add('bi-volume-up-fill'); // Three arcs (high volume)
+                }
+            }
+        });
+
+    </script>
+    <script>
+    playlistButtons.forEach((button) => {
+        button.addEventListener('click', function () {
+            // Reset semua tombol playListPlay
+            playlistButtons.forEach(btn => btn.classList.remove('bi-pause-circle-fill'));
+            playlistButtons.forEach(btn => btn.classList.add('bi-play-circle-fill'));
+
+            // Ganti ikon tombol yang diklik
+            this.classList.remove('bi-play-circle-fill');
+            this.classList.add('bi-pause-circle-fill');
+        });
+    });
+
+    </script>
 
 </html>
